@@ -1,0 +1,27 @@
+body {
+    background-color: #153240;
+    color: white;
+}
+
+#appName {
+    color: #FAD946;
+    float: left;
+}
+.button {
+    background: #FAEEB6;
+    color: black;
+    cursor: pointer;
+    box-shadow: inset 0 1px 0 #FAD946, inset 0 0 2px 2px #FAD946;;
+    border: 1px solid #FAD946;
+    border-radius: 8px;
+}
+
+.button:focus {
+    background-color: #FAD946;
+}
+
+.container {
+    background: white;
+    box-shadow: 0 0 2px 2px #C4C2C0, 0 0 7px 3px #C4C2C0;
+    border-radius: 8px;
+}
