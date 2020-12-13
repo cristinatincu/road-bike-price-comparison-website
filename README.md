@@ -15,3 +15,5 @@ App:
 * Vue.js
 * Axios
 * Jest
+* CSS
+* HTML
