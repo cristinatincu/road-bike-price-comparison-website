@@ -3,7 +3,7 @@
     <div class="searchBar">
       <img src="../assets/logo.png" alt="Logo"/>
       <input type="text" ref="searchQuery" v-model="searchQuery"
-                                              id="searchInput" placeholder="Search road bike">
+             id="searchInput" placeholder="Search road bike">
     </div>
 
     <div id="resultGrid">
@@ -37,7 +37,7 @@ export default {
     }
   },
   methods: {
-    getRoadBikes: function () {
+    getRoadBikes() {
       let app = this;
       axios.get('/api/bikes', {
         params:
@@ -48,32 +48,32 @@ export default {
             }
       })
           .then(function(response) {
-            app.roadBikes = response.data.roadBikes;
-            app.totalBikes = response.data.numberOfRoadBikes;
+            app.roadBikes = response.data.rows;
+            app.totalBikes = response.data.count;
           })
           .catch(error => console.log(error))
-      console.log("Updating content");
     },
-    loadPage: function (n) {
+    async loadPage(n) {
       this.currentPage = n;
       const pageButton = this.$refs['button' + n][0];
       pageButton.focus();
+      // update query in order to be able to return to same page after viewing an item
       this.updateQuery();
-      this.getRoadBikes();
+      await this.getRoadBikes();
     },
     updateQuery: function () {
       this.$router.push({ name: 'search', query: { page: this.currentPage, search: this.searchQuery }})
     }
   },
   watch: {
-    searchQuery: function () {
+    searchQuery: async function () {
       this.currentPage = 1;
       this.updateQuery();
-      this.getRoadBikes();
+      await this.getRoadBikes();
     }
   },
-  mounted() {
-    this.getRoadBikes();
+  mounted: async function () {
+    await this.getRoadBikes();
   }
 }
 </script>
@@ -102,7 +102,6 @@ export default {
   width: 20em;
   height: 20em;
   object-fit: contain;
-  background: white;
 }
 
 .gridItem p {
@@ -118,6 +117,7 @@ export default {
   margin-left: 5px;
   margin-right: 5px;
   padding: 2px 8px;
+  width: 35px;
 }
 
 .pageButtonContainer {

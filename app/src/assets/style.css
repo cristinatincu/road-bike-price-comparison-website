@@ -11,9 +11,10 @@ body {
     background: #FAEEB6;
     color: black;
     cursor: pointer;
-    box-shadow: inset 0 1px 0 #FAD946, inset 0 0 2px 2px #FAD946;;
+    box-shadow: 0 1px 0 #FAD946, 0 1px 3px #FAD946, inset 0 1px 0 #FAD946, inset 0 0 3px #FAD946;
     border: 1px solid #FAD946;
     border-radius: 8px;
+    text-align: center;
 }
 
 .button:focus {

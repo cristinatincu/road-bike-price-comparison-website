@@ -2,30 +2,38 @@
   <div>
     <img id="backButton" src="./../assets/backButton.png" @click="$router.go(-1)" alt="Back button">
     <div class="itemPage container" v-if="comparisons">
-      <h1>{{ comparisons[0].name }}</h1>
-      <img v-bind:src="comparisons[0].image_url" alt="Road Bike Image"/>
+      <h1>{{ comparisons.name }}</h1>
+      <img v-bind:src="comparisons.image_url" alt="Road Bike Image"/>
+      <pre id="description">{{ comparisons.description }}</pre>
+
       <div class="options">
         <label>Color:</label>
         <select v-model="color">
           <option v-for="color in Object.keys(colorSizes)" :key="color.id" v-bind:value="color">{{color}}</option>
-        </select>
+        </select><br>
+
         <label>Size:</label>
         <select v-model="size">
           <option v-for="size in colorSizes[color]" :key="size.id" v-bind:value="size">{{size}}</option>
         </select>
       </div>
+
       <div class="comparisonHeader">
+        <label>Name</label>
         <label>Price</label>
         <label>Go To</label>
       </div>
+
       <div v-if="color && size" class="comparisonWrapper">
         <div class="comparison" v-for="comparison in selectedComparisons" :key="comparison.id">
-          <label class="price">{{comparison.price}}</label>
+          <label>{{comparison.name}}</label>
+          <label id = "price">{{comparison.price}}</label>
           <a class="button" v-bind:href=comparison.url>{{comparison.website}}</a>
         </div>
       </div>
+
       <p id="selectMessage" v-else>Please select a color and a size</p>
-      <p id="description">{{ comparisons[0].description }}</p>
+
     </div>
   </div>
 </template>
@@ -44,6 +52,7 @@ export default {
   },
   methods: {
     getComparisons: function() {
+      // bike id is retrieved from route parameters
       const url = "/api/bikes/" + this.$route.params.id;
       axios.get(url)
           .then(response => (this.comparisons = response.data))
@@ -55,21 +64,24 @@ export default {
   },
   computed: {
     colorSizes: function () {
-      let colorSizes = {};
+      let colorSizes = {}; // object having colors as key and array of sizes as value
       let app = this;
-      // add each color to object keys and initialize the size array
-      app.comparisons.forEach(comparison => (
+      // add each color to colorSizes and initialize the size array
+      app.comparisons.roadBikes.forEach(comparison => (
           colorSizes[comparison.color] = []));
       // add size to the array of each color
-      app.comparisons.forEach(comparison => (
+      app.comparisons.roadBikes.forEach(comparison => (
         colorSizes[comparison.color].push(comparison.size)));
+      // reduce array of sizes to unique values
+      for (const [key, value] of Object.entries(colorSizes))
+        colorSizes[key] = new Set(value);
 
       return colorSizes;
     },
     selectedComparisons: function () {
       const websites = ['Wiggle', 'Evans', 'Tredz', 'SigmaSports', 'ChainReaction']
       // select only data that has the selected color and size
-      let result = this.comparisons.filter(comparison =>
+      let result = this.comparisons.roadBikes.filter(comparison =>
           comparison.size === this.size && comparison.color === this.color)
       // find the name of websites that have an offer
       result.forEach(function (comparison) {
@@ -91,18 +103,24 @@ h1 {
   text-shadow: 0 1px 1px #7E7E82, 0 1px 1px #7E7E82;
 }
 .itemPage img {
-  margin: 0 20px 20px 0;
+  margin-right: 20px;
   width: 30em;
+  height: 30em;
   float: left;
+  object-fit: contain;
 }
 
 #description {
   color: #153240;
-  font-size: 20px;
+  font-size: 15px;
   line-height: 30px;
   text-align: justify;
-  clear: both;
-  margin-bottom: 0;
+  margin: 0 20px 0 20px;
+  overflow: auto;
+  height: 25em;
+  padding: 20px;
+  border: 2px solid #C4C2C0;
+  white-space:pre-wrap;
 }
 
 .options label {
@@ -126,15 +144,16 @@ select {
 }
 
 .options {
+  clear: both;
   display: grid;
-  grid-template-columns: max-content max-content;
+  grid-template-columns: max-content max-content max-content;
   grid-gap: 10px;
 }
 
 .comparisonHeader {
   color: #153240;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 10px;
   text-align: center;
   margin-top: 20px;
@@ -145,30 +164,35 @@ select {
 
 .comparison {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 10px;
   text-align: center;
   margin-top: 10px;
+  font-size: 18px;
 }
 
-.price {
+.comparison label {
   color: #153240;
+}
+
+#price {
   font-size: 23px;
 }
 
 .comparison a:link, .comparison a:visited {
   color: #153240;
   text-decoration: none;
-  text-align: center;
   padding: 5px;
   margin: 0 5em;
   font-weight: bold;
   background: white;
+  text-align: center;
+  line-height: 30px;
 }
 
 .comparison a:hover {
-  box-shadow: 0 1px 0 #FAD946, 0 1px 3px #FAD946, inset 0 1px 0 #FAD946, inset 0 0 3px #FAD946;
-}
+  box-shadow: inset 0 1px 0 #FAD946, inset 0 0 2px 2px #FAD946;
+  }
 
 #backButton {
   margin-left: 20px;
